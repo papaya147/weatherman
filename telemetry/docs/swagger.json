@@ -1,0 +1,273 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "The comprehensive list of all Weatherman Telemetry Server APIs",
+        "title": "Weatherman Telemetry Server APIs",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/data/csv": {
+            "get": {
+                "description": "Get a CSV formatted file of all the MQTT data",
+                "produces": [
+                    "text/csv"
+                ],
+                "tags": [
+                    "data"
+                ],
+                "summary": "Get a CSV formatted file of all the MQTT data",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/data": {
+            "get": {
+                "description": "Get individual data for a ranged time frame",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data"
+                ],
+                "summary": "Get individual data for a ranged time frame",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "json",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "json",
+                        "name": "end",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/data.getDataResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/mean": {
+            "get": {
+                "description": "Get mean data for daily, weekly, monthly and yearly time frames",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data"
+                ],
+                "summary": "Get mean data for different time frames",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.getMeanResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/publish": {
+            "post": {
+                "description": "Mock an MQTT weather publish, fields are formatted as Protobuf and sent via the MQTT broker",
+                "tags": [
+                    "mqtt"
+                ],
+                "summary": "Mock an MQTT weather publish",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "request-body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.publishModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.publishModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorModel"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.publishModel": {
+            "type": "object",
+            "required": [
+                "topic"
+            ],
+            "properties": {
+                "humidity": {
+                    "type": "number",
+                    "example": 50
+                },
+                "pressure": {
+                    "type": "number",
+                    "example": 50
+                },
+                "temperature": {
+                    "type": "number",
+                    "example": 100
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "topic/telemetry"
+                },
+                "water_amount": {
+                    "type": "number",
+                    "example": 10
+                },
+                "wind_direction": {
+                    "type": "number",
+                    "example": 60
+                },
+                "wind_speed": {
+                    "type": "number",
+                    "example": 25
+                }
+            }
+        },
+        "data.getDataResponse": {
+            "type": "object",
+            "properties": {
+                "humidity": {
+                    "type": "number"
+                },
+                "millis": {
+                    "type": "integer"
+                },
+                "pressure": {
+                    "type": "number"
+                },
+                "temperature": {
+                    "type": "number"
+                },
+                "water_amount": {
+                    "type": "number"
+                },
+                "wind_direction": {
+                    "type": "number"
+                },
+                "wind_speed": {
+                    "type": "number"
+                }
+            }
+        },
+        "data.getMeanResponse": {
+            "type": "object",
+            "properties": {
+                "daily_mean": {
+                    "$ref": "#/definitions/data.mean"
+                },
+                "monthly_mean": {
+                    "$ref": "#/definitions/data.mean"
+                },
+                "weekly_mean": {
+                    "$ref": "#/definitions/data.mean"
+                },
+                "yearly_mean": {
+                    "$ref": "#/definitions/data.mean"
+                }
+            }
+        },
+        "data.mean": {
+            "type": "object",
+            "properties": {
+                "mean_humidity": {
+                    "type": "number"
+                },
+                "mean_pressure": {
+                    "type": "number"
+                },
+                "mean_temperature": {
+                    "type": "number"
+                },
+                "mean_water_amount": {
+                    "type": "number"
+                },
+                "mean_wind_direction": {
+                    "type": "number"
+                },
+                "mean_wind_speed": {
+                    "type": "number"
+                }
+            }
+        },
+        "util.ErrorModel": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "something went wrong"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                }
+            }
+        }
+    }
+}

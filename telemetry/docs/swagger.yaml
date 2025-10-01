@@ -1,0 +1,183 @@
+basePath: /
+definitions:
+  api.publishModel:
+    properties:
+      humidity:
+        example: 50
+        type: number
+      pressure:
+        example: 50
+        type: number
+      temperature:
+        example: 100
+        type: number
+      topic:
+        example: topic/telemetry
+        type: string
+      water_amount:
+        example: 10
+        type: number
+      wind_direction:
+        example: 60
+        type: number
+      wind_speed:
+        example: 25
+        type: number
+    required:
+    - topic
+    type: object
+  data.getDataResponse:
+    properties:
+      humidity:
+        type: number
+      millis:
+        type: integer
+      pressure:
+        type: number
+      temperature:
+        type: number
+      water_amount:
+        type: number
+      wind_direction:
+        type: number
+      wind_speed:
+        type: number
+    type: object
+  data.getMeanResponse:
+    properties:
+      daily_mean:
+        $ref: '#/definitions/data.mean'
+      monthly_mean:
+        $ref: '#/definitions/data.mean'
+      weekly_mean:
+        $ref: '#/definitions/data.mean'
+      yearly_mean:
+        $ref: '#/definitions/data.mean'
+    type: object
+  data.mean:
+    properties:
+      mean_humidity:
+        type: number
+      mean_pressure:
+        type: number
+      mean_temperature:
+        type: number
+      mean_water_amount:
+        type: number
+      mean_wind_direction:
+        type: number
+      mean_wind_speed:
+        type: number
+    type: object
+  util.ErrorModel:
+    properties:
+      message:
+        example: something went wrong
+        type: string
+      status:
+        example: 400
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: The comprehensive list of all Weatherman Telemetry Server APIs
+  title: Weatherman Telemetry Server APIs
+  version: "1.0"
+paths:
+  /data/csv:
+    get:
+      description: Get a CSV formatted file of all the MQTT data
+      produces:
+      - text/csv
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.ErrorModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.ErrorModel'
+      summary: Get a CSV formatted file of all the MQTT data
+      tags:
+      - data
+  /data/data:
+    get:
+      description: Get individual data for a ranged time frame
+      parameters:
+      - description: json
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: json
+        in: query
+        name: end
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/data.getDataResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.ErrorModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.ErrorModel'
+      summary: Get individual data for a ranged time frame
+      tags:
+      - data
+  /data/mean:
+    get:
+      description: Get mean data for daily, weekly, monthly and yearly time frames
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.getMeanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.ErrorModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.ErrorModel'
+      summary: Get mean data for different time frames
+      tags:
+      - data
+  /publish:
+    post:
+      description: Mock an MQTT weather publish, fields are formatted as Protobuf
+        and sent via the MQTT broker
+      parameters:
+      - description: json
+        in: body
+        name: request-body
+        required: true
+        schema:
+          $ref: '#/definitions/api.publishModel'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.publishModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.ErrorModel'
+      summary: Mock an MQTT weather publish
+      tags:
+      - mqtt
+swagger: "2.0"

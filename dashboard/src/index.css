@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  font-family: "Poppins";
+  color: #333;
+  padding: 6px 0px;
+}
+
+.content {
+  max-width: 80%;
+  margin: 20px auto;
+  padding: 10px;
+}
+
+.navbar {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  max-width: 80%;
+  margin: 0 auto;
+  border-bottom: 1px solid #f2f2f2;
+}
+.navbar h1 {
+  background-image: linear-gradient(to right, #02faab, #0259fa);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.navbar .links {
+  margin-left: auto;
+}
+.navbar a {
+  margin-left: 16px;
+  text-decoration: none;
+  padding: 6px;
+}
+.navbar a:hover {
+  color: #800080;
+}
+
+label {
+  width: 50px;
+  display: inline-block;
+}
+
+.form {
+  display: flex;
+}
+
+.form-field {
+  margin-right: 20px;
+}
+
+.graph-view {
+  display: flex;
+  justify-content: space-between;
+}
+
+.graph-view .graph {
+  max-width: 50%;
+  flex-grow: 1;
+}
+
+button {
+  background: #fff;
+  color: #0259fa;
+  border: 1px solid;
+  border-color: #0259fa;
+  padding: 8px;
+  border-radius: 8px;
+  margin-right: 10px;
+  cursor: pointer;
+  min-width: 52px;
+}
+
+button:hover {
+  background: #0259fa;
+  color: #fff;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
