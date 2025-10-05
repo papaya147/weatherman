@@ -47,8 +47,8 @@ make build_deploy
 3. Build and Run the Mock Data Generator (not required if you have an MQTT producer)
 ```bash
 cd mock-data-generator
-conda  create  --prefix  ./env  python=3.11
-conda  activate  ./env
+conda create --prefix ./env python=3.11
+conda activate ./env
 pip install -r requirements.txt
 python generator.py --start-date 2003-01-01 --end-date 2024-01-01
 ```
