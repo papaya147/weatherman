@@ -1,51 +1,59 @@
-# Weather Telemetry Data System
 
-This project establishes a robust pipeline for the collection, processing, and dissemination of weather telemetry data. Utilizing Docker for streamlined deployment, the system integrates a set of services including a data generator, an MQTT broker, a data-consuming server, and a PostgreSQL database. This setup facilitates the seamless flow of weather data from acquisition to storage, ideal for applications in data analytics, monitoring, or environmental research.
+# Weatherman
+A robust IoT-compatible pipeline for collecting, processing, and visualizing weather telemetry data. This project integrates a mock data generator, MQTT-based data streaming, a PostgreSQL database for storage, a server for data processing, a dashboard for visualization, and a random forest model for weather predictions. Docker Compose orchestrates the deployment of all components for seamless operation.
 
-## Components Overview
+## Features
+- [**Mock Data Generator**](https://github.com/papaya147/weatherman/tree/main/mock-data-generator): Generates synthetic weather data (timestamp, temperature, humidity, wind speed, wind direction, pressure, water amount) and publishes it to an MQTT broker.
+- [**Telemetry Service**](https://github.com/papaya147/weatherman/tree/main/telemetry): Subscribes to MQTT, ingests weather data, stores it in PostgreSQL, serves data to the dashboard, and provides an API for downloading data as CSV for model training.
+- [**Dashboard**](https://github.com/papaya147/weatherman/tree/main/dashboard): Visualizes weather metrics with interactive graphs for real-time monitoring.
+- [**Random Forest Model**](https://github.com/papaya147/weatherman/tree/main/model): Supports model training and deployment for weather predictions, integrated with the telemetry server.
+- **Docker Compose**: Orchestrates all services (MQTT broker, PostgreSQL, telemetry server, dashboard) for easy deployment.
 
-- **Mock Data Generator**: Downloads, processes, and publishes weather data to an MQTT broker based on specified start and end dates.
-- **MQTT Broker (EMQX)**: Facilitates real-time messaging between the data generator and the server.
-- **Database (PostgreSQL)**: Stores the processed weather data for persistent access and analysis.
-- **Server**: Subscribes to the MQTT broker to receive weather data, which it then processes and stores in the database.
-- **Dashboard**: Displays data and predictions.
+### Connecting Custom MQTT Producer
+The weather telemetry data is defined in [`telemetry/proto/weather-telemetry.proto`](https://github.com/papaya147/weatherman/blob/main/telemetry/proto/weather-telemetry.proto) and defined as:
+```proto
+syntax = "proto3";
 
-## Getting Started
+package weatherdata;
 
-### Prerequisites
+message WeatherTelemetry {
+    uint64 timestamp = 1;
+    double temperature = 2;
+    double humidity = 3;
+    double windSpeed = 4;
+    double windDirection = 5;
+    double pressure = 6;
+    double waterAmount = 7;
+}
+```
 
-- Docker and Docker Compose installed on your system.
-- Basic familiarity with Docker containerization concepts.
+## Prerequisites
+- **Make**
+-   **Docker** and **Docker Compose** installed.
+-   Basic understanding of Docker and containerization.
+-   Conda (for running the mock data generator standalone).
+-   Optional: Go environment and **protoc** (if modifying the Protobuf definitions or related services).
 
-### Building and Running the System
-
-1. **Build the Data Generator Docker Image**
-
-   Given that `START_DATE` and `END_DATE` are build-time variables, use the `--build-arg` option with `docker build`:
-
-   ```bash
-   docker build --build-arg START_DATE=2003-01-01 --build-arg END_DATE=2024-01-01 -t data-generator:latest .
-   ```
-
-2. **Configure the System**
-
-   Modify the `.env` file or the docker-compose.yml directly to adjust environment variables and settings according to your needs. Ensure that the `START_DATE` and `END_DATE` variables match your requirements.
-
-3. **Deploy with Docker Compose**
-
-   Launch all services with the following command:
-
-   ```bash
-   docker-compose up -d
-   ```
-
-This spins up the necessary infrastructure, initiating the automatic data flow from the data generator through to data storage in PostgreSQL.
-
-### System Interaction
-
-- **Data Generation**: The data generator simulates telemetry collection by fetching, preprocessing, and publishing serialized weather data.
-- **Data Consumption**: The server listens for new data on the MQTT topic, deserializes the payloads, and persists them in the PostgreSQL database.
-
-## Docker Build Dependencies
-
-Note that compiling certain Python packages for the data generator might necessitate additional build-time dependencies. You may need to extend the Dockerfile to include the necessary packages for your Python environment, particularly when using Alpine Linux as the base image.
+## Setup and Installation
+1. Clone the Repository
+```bash
+git clone https://github.com/papaya147/weatherman.git
+cd weatherman
+```
+2. Build and Run the Services
+```bash
+make build_deploy
+```
+3. Build and Run the Mock Data Generator (not required if you have an MQTT producer)
+```bash
+cd mock-data-generator
+conda  create  --prefix  ./env  python=3.11
+conda  activate  ./env
+pip install -r requirements.txt
+python generator.py --start-date 2003-01-01 --end-date 2024-01-01
+```
+Alternatively, create a container with docker:
+```bash
+cd mock-data-generator
+docker build --build-arg START_DATE=2003-01-01 --build-arg END_DATE=2024-01-01 -t data-generator:latest .
+```
